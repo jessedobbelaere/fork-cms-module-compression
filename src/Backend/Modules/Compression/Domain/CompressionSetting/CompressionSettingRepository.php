@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Backend\Modules\Compression\Domain\CompressionSetting;
 
@@ -33,6 +34,11 @@ final class CompressionSettingRepository extends EntityRepository
      */
     public function deleteExceptPaths(array $paths): int
     {
+        // If nothing was selected, delete all our settings
+        if (empty($paths)) {
+            return $this->createQueryBuilder('cs')->delete()->getQuery()->execute();
+        }
+
         // Delete all that is not checked in the tree.
         return $this->createQueryBuilder('cs')
             ->delete()

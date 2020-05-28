@@ -14,3 +14,11 @@ services:
             - "@compression.repository.compression_setting"
         tags:
             - { name: command_handler, handles: Backend\Modules\Compression\Domain\CompressionSetting\Command\UpdateCompressionSettings }
+
+    compression.handler.create_compression_history_record:
+        class: Backend\Modules\Compression\Domain\CompressionHistory\Command\CreateCompressionHistoryRecordHandler
+        public: true
+        arguments:
+            - "@compression.repository.compression_history"
+        tags:
+            - { name: command_handler, handles: Backend\Modules\Compression\Domain\CompressionHistory\Command\CreateCompressionHistoryRecord }

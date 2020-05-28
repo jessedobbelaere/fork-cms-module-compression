@@ -1,12 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace Backend\Modules\Compression\Actions;
 
 use Backend\Core\Engine\Base\ActionIndex;
 use Backend\Core\Engine\Model;
-use Backend\Modules\Compression\Clients\TinyClient;
+use Backend\Modules\Compression\Exception\ValidateResponseErrorException;
 use Backend\Modules\Compression\Domain\Settings\Command\SaveSettings;
 use Backend\Modules\Compression\Domain\Settings\Event\SettingsSavedEvent;
+use Backend\Modules\Compression\Http\TinyPngApiClient;
 
 /**
  * Class Ping
@@ -30,8 +32,12 @@ final class Ping extends ActionIndex
 
     private function ping(): bool
     {
-        $client = TinyClient::createFromModuleSettings($this->get('fork.settings'));
-        return $client->isValidApiKey();
+        $client = TinyPngApiClient::createFromModuleSettings($this->get('fork.settings'));
+        try {
+            return $client->validate();
+        } catch (ValidateResponseErrorException $e) {
+            return false;
+        }
     }
 
     private function getLink(array $parameters = []): string

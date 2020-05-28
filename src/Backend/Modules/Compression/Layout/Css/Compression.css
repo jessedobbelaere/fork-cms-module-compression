@@ -9,9 +9,9 @@
   * Settings
  */
 .usage {
-	font-weight: bold;
-	display: inline-block;
-	font-size: 1.6rem;
+    font-weight: bold;
+    display: inline-block;
+    font-size: 1.6rem;
 }
 .usage__counter--free {
     color: #8cc938
@@ -33,5 +33,11 @@
  * Console tab
  */
 #js-compression-console {
+    font-size: 13px;
+    word-break: break-all;
+    word-wrap: break-word;
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    padding: 1rem;
+    background-color: #111;
+    color: #00d600;
 }

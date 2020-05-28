@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Backend\Modules\Compression\Domain\CompressionHistory;
 
@@ -45,8 +46,8 @@ class CompressionHistory
     private $compressedSize;
 
     /**
-     * @var int
-     * @ORM\Column(type="integer")
+     * @var string
+     * * @ORM\Column(type="string", length=40, nullable=false)
      */
     private $checksum;
 
@@ -62,5 +63,26 @@ class CompressionHistory
     public function onPrePersist(): void
     {
         $this->compressedOn = new DateTime();
+    }
+
+    public function __construct(string $filename, string $path, int $originalSize, int $compressedSize, string $checksum)
+    {
+        $this->filename = $filename;
+        $this->path = $path;
+        $this->originalSize = $originalSize;
+        $this->compressedSize = $compressedSize;
+        $this->checksum = $checksum;
+    }
+
+    public static function fromDataTransferObject(
+        CompressionHistoryRecordDataTransferObject $compressionHistoryRecordDataTransferObject
+    ): self {
+        return new self(
+            $compressionHistoryRecordDataTransferObject->filename,
+            $compressionHistoryRecordDataTransferObject->path,
+            $compressionHistoryRecordDataTransferObject->originalSize,
+            $compressionHistoryRecordDataTransferObject->compressedSize,
+            $compressionHistoryRecordDataTransferObject->checksum
+        );
     }
 }

@@ -1,8 +1,7 @@
 <?php
+declare(strict_types=1);
 
 namespace Backend\Modules\Compression\Domain\CompressionSetting\Command;
-
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class UpdateCompressionSettings
@@ -11,8 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class UpdateCompressionSettings
 {
     /**
-     * @var string
-     * @Assert\NotBlank(message="err.FieldIsRequired")
+     * @var string|null
      */
     public $folders;
 
@@ -21,6 +19,6 @@ final class UpdateCompressionSettings
      */
     public function getFoldersArray(): array
     {
-        return explode(',', $this->folders);
+        return $this->folders !== null ? explode(',', $this->folders) : [];
     }
 }

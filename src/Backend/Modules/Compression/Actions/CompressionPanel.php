@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Backend\Modules\Compression\Actions;
 
@@ -85,7 +86,7 @@ final class CompressionPanel extends ActionIndex
         /** @var UpdateCompressionSettings $settings */
         $settings = $form->getData();
 
-        // The command bus will handle the saving of the content block in the database.
+        // The command bus will handle the saving of the settings in the database.
         $this->get('command_bus')->handle($settings);
 
         return $settings;

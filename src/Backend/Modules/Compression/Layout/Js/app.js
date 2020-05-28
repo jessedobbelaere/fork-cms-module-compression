@@ -44,9 +44,12 @@ ReactDOM.render(<CompressionSettingsTree {...window.COMPRESSION_APP} />, documen
  */
 document.getElementById('js-btn-console').addEventListener('click', function(event) {
   event.preventDefault();
+  const consoleTxtArea = document.getElementById('js-compression-console');
+
+  // Erase console first
+  consoleTxtArea.innerHTML = '';
 
   function logMessage(message) {
-    const consoleTxtArea = document.getElementById('js-compression-console');
     consoleTxtArea.innerHTML += moment().format('hh:mm:ss') + " ";
     consoleTxtArea.innerHTML += message;
     consoleTxtArea.innerHTML += "\n";
@@ -62,7 +65,7 @@ document.getElementById('js-btn-console').addEventListener('click', function(eve
     eventSource.addEventListener("compression-event", (event) => {
       // Gracefully shut down the stream when we reach an END-OF-STREAM delimiter.
       if (event.data.endsWith("END-OF-STREAM")) {
-        logMessage("Finished compression.");
+        logMessage("...Done!");
         eventSource.close();
         return;
       }
@@ -70,7 +73,8 @@ document.getElementById('js-btn-console').addEventListener('click', function(eve
       logMessage(event.data);
     });
     eventSource.addEventListener("error", (event) => {
-      logMessage("Error");
+      logMessage("Server Error occurred.");
+      eventSource.close();
 
       if (event.readyState === EventSource.CLOSED) {
         logMessage("Error: Connection closed");

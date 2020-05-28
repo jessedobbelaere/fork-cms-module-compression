@@ -1,12 +1,16 @@
 <?php
+declare(strict_types=1);
 
 namespace Backend\Modules\Compression\Actions;
 
 use Backend\Core\Engine\Base\Action;
-use Backend\Modules\Compression\Clients\TinyClient;
+use Backend\Modules\Compression\Domain\CompressionHistory\Command\CreateCompressionHistoryRecord;
+use Backend\Modules\Compression\Domain\CompressionHistory\Helpers\Helper;
+use Backend\Modules\Compression\Exception\FileNotFoundException;
 use Backend\Modules\Compression\Domain\CompressionHistory\CompressionHistoryRepository;
 use Backend\Modules\Compression\Domain\CompressionSetting\CompressionSetting;
 use Backend\Modules\Compression\Domain\CompressionSetting\CompressionSettingRepository;
+use Backend\Modules\Compression\Http\TinyPngApiClient;
 use InvalidArgumentException;
 use SplStack;
 use Symfony\Component\Finder\Finder;
@@ -42,15 +46,16 @@ class CompressImages extends Action
         header('HTTP/1.1 200 OK', true, $statusCode);
 
         // Create a client and stack of images to process
-        $client = TinyClient::createFromModuleSettings($this->get('fork.settings'));
+        $client = TinyPngApiClient::createFromModuleSettings($this->get('fork.settings'));
         $imagesStack = $this->getImagesFromFolders();
 
         // Validate that there are images to process
         if ($imagesStack->isEmpty()) {
             $this->sendCompressionEvent("No images to compress found in the selected folders...");
             $this->sendCompressionEvent(self::EVENT_STREAM_END_DELIMITER);
-            exit(); // Make sure we don't do fork cms logic after this
+            exit(); // Make sure we don't execute fork cms logic after this
         }
+        $this->sendCompressionEvent("Found {$imagesStack->count()} image(s) to compress");
 
         while (!$imagesStack->isEmpty()) {
             if (connection_aborted() === 1) {
@@ -64,16 +69,32 @@ class CompressImages extends Action
             /** @var SplFileInfo $image */
             $image = $imagesStack->pop();
 
-            // Compress image
-            // @todo lookup size of image
+            // Start compressing the image
             $this->sendCompressionEvent("Starting compression of " . $image->getFilename());
-            $client->shrinkImage($image);
 
-            // Write to history
+            try {
+                $compressionSource = $client->fromFile($image->getRealPath());
+                $compressionSource->toFile($image->getRealPath());
 
-            // Send event message
-            $this->sendCompressionEvent("Finished compression of " . $image->getFilename());
+                // Write to history
+                // The command bus will handle the saving of the history record in the database.
+                $historyRecord = new CreateCompressionHistoryRecord(
+                    $image,
+                    $compressionSource->getInputSize(),
+                    $compressionSource->getOutputSize()
+                );
+                $this->get('command_bus')->handle($historyRecord);
 
+                // Send succesful event message
+                $this->sendCompressionEvent(sprintf(
+                    "Finished compression of image %s. Saved %s (%s%%).",
+                    $image->getFilename(),
+                    Helper::readableBytes($compressionSource->getSavedBytes()),
+                    $compressionSource->getSavedPercentage()
+                ));
+            } catch (FileNotFoundException $e) {
+                $this->sendCompressionEvent("Error compressing image " . $image->getFilename() . ": " . $e->getMessage());
+            }
         }
 
         if ($imagesStack->isEmpty()) {

@@ -1,13 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace Backend\Modules\Compression\Actions;
 
 use Backend\Core\Engine\Base\ActionIndex;
 use Backend\Core\Engine\Model;
-use Backend\Modules\Compression\Clients\TinyClient;
 use Backend\Modules\Compression\Domain\Settings\Command\SaveSettings;
 use Backend\Modules\Compression\Domain\Settings\Event\SettingsSavedEvent;
 use Backend\Modules\Compression\Domain\Settings\SettingsType;
+use Backend\Modules\Compression\Http\TinyPngApiClient;
 use Symfony\Component\Form\Form;
 
 final class Settings extends ActionIndex
@@ -19,7 +20,7 @@ final class Settings extends ActionIndex
         $form = $this->getForm();
 
         if (!$form->isSubmitted() || !$form->isValid()) {
-            $client = TinyClient::createFromModuleSettings($this->get('fork.settings'));
+            $client = TinyPngApiClient::createFromModuleSettings($this->get('fork.settings'));
             $this->template->assign('form', $form->createView());
             $this->template->assign('monthlyCompressionCount', $client->getMonthlyCompressionCount());
 

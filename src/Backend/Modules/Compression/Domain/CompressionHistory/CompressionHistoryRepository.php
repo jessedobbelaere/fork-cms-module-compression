@@ -1,14 +1,26 @@
 <?php
+declare(strict_types=1);
 
 namespace Backend\Modules\Compression\Domain\CompressionHistory;
 
 use Backend\Modules\Compression\Domain\CompressionHistory\Helpers\Helper;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\ORMException;
 use PDO;
 
 final class CompressionHistoryRepository extends EntityRepository
 {
+    /**
+     * We don't flush here, see http://disq.us/p/okjc6b
+     * @param CompressionHistory $compressionHistoryRecord
+     * @throws ORMException
+     */
+    public function add(CompressionHistory $compressionHistoryRecord): void
+    {
+        $this->getEntityManager()->persist($compressionHistoryRecord);
+    }
+
     /**
      * Fetch relevant statistics based on previous compression results.
      * @return array
