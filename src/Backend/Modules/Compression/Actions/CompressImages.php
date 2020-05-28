@@ -55,7 +55,8 @@ class CompressImages extends Action
             $this->sendCompressionEvent(self::EVENT_STREAM_END_DELIMITER);
             exit(); // Make sure we don't execute fork cms logic after this
         }
-        $this->sendCompressionEvent("Found {$imagesStack->count()} image(s) to compress");
+        $currentCreditsStatus = $client->getMonthlyCompressionCount() . "/" . $client::MAX_FREE_CREDITS;
+        $this->sendCompressionEvent("Found {$imagesStack->count()} image(s) to compress ($currentCreditsStatus credits)");
 
         while (!$imagesStack->isEmpty()) {
             if (connection_aborted() === 1) {
