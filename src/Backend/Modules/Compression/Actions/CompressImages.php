@@ -104,7 +104,8 @@ class CompressImages extends Action
         }
     }
 
-    private function sendCompressionEvent(string $data): void {
+    private function sendCompressionEvent(string $data): void
+    {
         echo sprintf(
             "id: %s\nevent: %s\ndata: %s\n\n",
             uniqid('', true),

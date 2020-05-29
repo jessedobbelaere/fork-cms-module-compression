@@ -43,7 +43,8 @@ class CompressionSetting
      * @param string $path
      * @return static
      */
-    public static function createFromPath(string $path) : self {
+    public static function createFromPath(string $path) : self
+    {
         return new self(basename($path), $path);
     }
 

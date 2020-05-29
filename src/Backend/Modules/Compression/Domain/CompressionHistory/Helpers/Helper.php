@@ -16,7 +16,8 @@ class Helper
      * @param int $bytes
      * @return string
      */
-    public static function readableBytes(int $bytes): string {
+    public static function readableBytes(int $bytes): string
+    {
         if ($bytes < 0) {
             throw new InvalidArgumentException('Bytes should be a non-negative integer');
         }

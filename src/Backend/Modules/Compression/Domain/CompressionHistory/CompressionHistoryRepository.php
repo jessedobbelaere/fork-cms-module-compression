@@ -26,7 +26,8 @@ final class CompressionHistoryRepository extends EntityRepository
      * @return array
      * @throws DBALException
      */
-    public function getStatistics(): array {
+    public function getStatistics(): array
+    {
         // Use a raw connection as Doctrine DQL does not support ROUND
         $connection = $this->getEntityManager()->getConnection();
         $results = $connection->executeQuery('

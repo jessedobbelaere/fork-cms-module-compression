@@ -58,7 +58,7 @@ final class CompressionPanel extends ActionIndex
         parent::parse();
 
         // Build a directory tree from the Files directory
-        $directoryTreeHtml = Helper::BuildDirectoryTreeJson(FRONTEND_FILES_PATH, 0,  []);
+        $directoryTreeHtml = Helper::BuildDirectoryTreeJson(FRONTEND_FILES_PATH, 0, []);
         $this->template->assign('directoryTree', $directoryTreeHtml);
 
         /** @var CompressionSettingRepository $settingsRepository */
