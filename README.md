@@ -1,11 +1,15 @@
 # Fork CMS Compression Module
 
+![tests](https://github.com/friends-of-forkcms/fork-cms-module-compression/workflows/run-tests/badge.svg)
+
 ## Description
-The Fork CMS Compression module lets you compress PNG & JPG images on your website. Use this module to shrink images on your website, 
-so they will use **less bandwidth and your website will load faster**. The compression module uses the compression engine 
+
+The Fork CMS Compression module lets you compress PNG & JPG images on your website. Use this module to shrink images on your website,
+so they will use **less bandwidth and your website will load faster**. The compression module uses the compression engine
 of [TinyPNG](https://tinypng.com/) and [TinyJPG](https://tinyjpg.com/).
 
 ## Preview
+
 Backend + statistics:
 
 [ ![Image](http://i.imgur.com/NvjmRHy.gif "Backend") ](http://i.imgur.com/NvjmRHy.gif)
@@ -18,9 +22,9 @@ I did the test with 3 images (3264x2448 resolution) taken from my camera. I uplo
 
 1. Install the [Tinify API client for PHP](https://github.com/tinify/tinify-php) php package: `composer require tinify/tinify`
 1. Upload the `/src/Backend/Modules/Compression` folder to your `/src/Backend/Modules` folder.
-3. Browse to your Fork CMS backend.
-4. Go to `Settings > Modules`. Click on the install button next to the Compression module.
-5. Go to `Settings > Modules > Compression` to start using it.
+1. Browse to your Fork CMS backend.
+1. Go to `Settings > Modules`. Click on the install button next to the Compression module.
+1. Go to `Settings > Modules > Compression` to start using it.
 
 ## How to use it
 
@@ -36,5 +40,6 @@ Note: We store a history of compressed files in the database with a checksum. By
 If you encounter any bugs, please create an issue (or feel free to fix it yourself with a PR).
 
 ## Discussion
+
 - Slack: [Fork CMS Slack channel](https://fork-cms.herokuapp.com)
 - Twitter: [@jessedobbelaere](https://www.twitter.com/jessedobbelaere)
