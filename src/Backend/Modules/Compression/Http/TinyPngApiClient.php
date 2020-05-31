@@ -4,12 +4,10 @@ declare(strict_types=1);
 namespace Backend\Modules\Compression\Http;
 
 use Backend\Modules\Compression\Exception\FileNotFoundException;
-use Backend\Modules\Compression\Exception\ResponseErrorException;
 use Backend\Modules\Compression\Exception\ValidateResponseErrorException;
 use Common\ModulesSettings;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use SplFileInfo;
 
 /**
  * Class TinyPngApiClient

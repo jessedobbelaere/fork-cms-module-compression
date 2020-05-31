@@ -2,9 +2,11 @@
 
 namespace Backend\Modules\Compression\Tests\Http;
 
+use Backend\Modules\Compression\Exception\ValidateResponseErrorException;
 use Backend\Modules\Compression\Http\TinyPngApiClient;
 use Common\ModulesSettings;
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -51,5 +53,43 @@ class TinyPngApiClientTest extends TestCase
         (function () use ($key) {
             TinyPngApiClientTest::assertSame($key, $this->apiKey);
         })->call($client);
+    }
+
+    public function testCanGetMonthlyCompressionCount(): void
+    {
+        $response = new Response(200, ['Compression-Count' => '187']);
+        $guzzleClient = $this->createMock(Client::class);
+        $guzzleClient->method('request')->with('POST', '/shrink')->willReturn($response);
+
+        $key = random_bytes(32);
+        $client = new TinyPngApiClient($key, [], $guzzleClient);
+
+        $this->assertEquals(187, $client->getMonthlyCompressionCount());
+    }
+
+    public function testShouldThrowExceptionIfNoMonthlyCompressionCountHeaderAvailable(): void
+    {
+        $response = new Response(200, []);
+        $guzzleClient = $this->createMock(Client::class);
+        $guzzleClient->method('request')->with('POST', '/shrink')->willReturn($response);
+
+        $key = random_bytes(32);
+        $client = new TinyPngApiClient($key, [], $guzzleClient);
+
+        $this->expectException(ValidateResponseErrorException::class);
+        $client->getMonthlyCompressionCount();
+    }
+
+    public function testShouldThrowExceptionIfBadResponseForMonthlyCompressionCount(): void
+    {
+        $response = new Response(500, ['Compression-Count' => '187']);
+        $guzzleClient = $this->createMock(Client::class);
+        $guzzleClient->method('request')->with('POST', '/shrink')->willReturn($response);
+
+        $key = random_bytes(32);
+        $client = new TinyPngApiClient($key, [], $guzzleClient);
+
+        $this->expectException(ValidateResponseErrorException::class);
+        $client->getMonthlyCompressionCount();
     }
 }
