@@ -28,7 +28,7 @@ class TinyPngApiClient
 
     public static function createFromModuleSettings(ModulesSettings $settings): self
     {
-        return new self($settings->get('Compression', 'api_key'));
+        return new self($settings->get('Compression', 'api_key', ''));
     }
 
     public function __construct(string $apiKey, array $options = [], ?ClientInterface $client = null)

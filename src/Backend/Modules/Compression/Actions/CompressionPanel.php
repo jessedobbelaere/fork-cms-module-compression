@@ -23,6 +23,11 @@ final class CompressionPanel extends ActionIndex
     {
         parent::execute();
 
+        // Check if we have an API key configured already
+        if (!$this->get('fork.settings')->get($this->getModule(), 'api_key')) {
+            $this->redirect(Model::createUrlForAction('Settings', $this->getModule(), null));
+        }
+
         $form = $this->getForm();
 
         if (!$form->isSubmitted() || !$form->isValid()) {
