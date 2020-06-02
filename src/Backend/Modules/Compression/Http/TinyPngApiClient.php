@@ -87,7 +87,7 @@ class TinyPngApiClient
 
     public function fromBuffer(string $buffer): Source
     {
-        $response = $this->client->request('post', self::API_ROUTE_SHRINK, ['body' => $buffer]);
+        $response = $this->client->request('POST', self::API_ROUTE_SHRINK, ['body' => $buffer]);
         return Source::fromResponse($this->client, $response);
     }
 
