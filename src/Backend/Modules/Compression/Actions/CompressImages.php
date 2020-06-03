@@ -10,11 +10,14 @@ use Backend\Modules\Compression\Exception\FileNotFoundException;
 use Backend\Modules\Compression\Domain\CompressionHistory\CompressionHistoryRepository;
 use Backend\Modules\Compression\Domain\CompressionSetting\CompressionSetting;
 use Backend\Modules\Compression\Domain\CompressionSetting\CompressionSettingRepository;
+use Backend\Modules\Compression\Exception\ResponseErrorException;
+use Backend\Modules\Compression\Exception\TooManyRequestsException;
 use Backend\Modules\Compression\Http\TinyPngApiClient;
 use InvalidArgumentException;
 use SplStack;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\Translation\Exception\InvalidResourceException;
 
 /**
  * In this class, we create a stream of SSE (Server-Sent Events) while compressing images to send realtime feedback to
@@ -52,8 +55,7 @@ class CompressImages extends Action
         // Validate that there are images to process
         if ($imagesStack->isEmpty()) {
             $this->sendCompressionEvent("No images to compress found in the selected folders...");
-            $this->sendCompressionEvent(self::EVENT_STREAM_END_DELIMITER);
-            exit(); // Make sure we don't execute fork cms logic after this
+            $this->closeStream(); // Make sure we don't execute fork cms logic after this
         }
         $currentCreditsStatus = $client->getMonthlyCompressionCount() . "/" . $client::MAX_FREE_CREDITS;
         $this->sendCompressionEvent("Found {$imagesStack->count()} image(s) to compress ($currentCreditsStatus credits)");
@@ -93,14 +95,16 @@ class CompressImages extends Action
                     Helper::readableBytes($compressionSource->getSavedBytes()),
                     $compressionSource->getSavedPercentage()
                 ));
-            } catch (FileNotFoundException $e) {
+            } catch (TooManyRequestsException $e) {
+                $this->sendCompressionEvent("Error compressing image " . $image->getFilename() . ": " . $e->getMessage());
+                $this->closeStream();
+            } catch (FileNotFoundException | InvalidResourceException | ResponseErrorException $e) {
                 $this->sendCompressionEvent("Error compressing image " . $image->getFilename() . ": " . $e->getMessage());
             }
         }
 
         if ($imagesStack->isEmpty()) {
-            $this->sendCompressionEvent(self::EVENT_STREAM_END_DELIMITER);
-            exit(); // Make sure we don't do fork cms logic after this
+            $this->closeStream();
         }
     }
 
@@ -171,5 +175,11 @@ class CompressImages extends Action
     private function getHistoryRepository(): CompressionHistoryRepository
     {
         return $this->get('compression.repository.compression_history');
+    }
+
+    private function closeStream(): void
+    {
+        $this->sendCompressionEvent(self::EVENT_STREAM_END_DELIMITER);
+        exit(); // Make sure we don't do fork cms logic after this
     }
 }

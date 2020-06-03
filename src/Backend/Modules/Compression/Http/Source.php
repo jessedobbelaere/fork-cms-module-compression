@@ -5,6 +5,7 @@ namespace Backend\Modules\Compression\Http;
 
 use Backend\Modules\Compression\Exception\InvalidResponseException;
 use Backend\Modules\Compression\Exception\ResponseErrorException;
+use Backend\Modules\Compression\Exception\TooManyRequestsException;
 use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -49,7 +50,11 @@ class Source
             );
         }
 
-        if (!empty($json['error'] ?? null)) {
+        if (!empty($json['error']) && $json['error'] === 'TooManyRequests') {
+            throw new TooManyRequestsException($json['message'], $body);
+        }
+
+        if (!empty($json['error'])) {
             throw new ResponseErrorException('Response error occurred', $body);
         }
 
