@@ -46,9 +46,6 @@ document.getElementById('js-btn-console').addEventListener('click', function(eve
   event.preventDefault();
   const consoleTxtArea = document.getElementById('js-compression-console');
 
-  // Erase console first
-  consoleTxtArea.innerHTML = '';
-
   function logMessage(message) {
     consoleTxtArea.innerHTML += moment().format('hh:mm:ss') + " ";
     consoleTxtArea.innerHTML += message;
@@ -56,12 +53,18 @@ document.getElementById('js-btn-console').addEventListener('click', function(eve
     consoleTxtArea.scrollTop += 20;
   }
 
+  // Erase console first
+  consoleTxtArea.innerHTML = '';
+
+  // Write immediately some feedback
+  logMessage("Compression is starting...");
+
   // Establish a "Server-Sent Events" stream with the PHP code and log responses to the console
   if (!!window.EventSource) {
     const eventSource = new EventSource("compress_images");
 
     // Process and send events to the console panel
-    eventSource.addEventListener("open", (e) => logMessage("Starting compression..."));
+    eventSource.addEventListener("open", (e) => logMessage("Started the compression engines..."));
     eventSource.addEventListener("compression-event", (event) => {
       // Gracefully shut down the stream when we reach an END-OF-STREAM delimiter.
       if (event.data.endsWith("END-OF-STREAM")) {
