@@ -27,7 +27,7 @@ class Helper
         }
 
         $i = floor(log($bytes) / log(1024));
-        $sizes = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+        $sizes = array('bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
 
         return sprintf('%.02F', $bytes / (1024 ** $i)) * 1 . ' ' . $sizes[$i];
     }

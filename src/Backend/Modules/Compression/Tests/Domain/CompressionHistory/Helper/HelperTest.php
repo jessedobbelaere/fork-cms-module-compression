@@ -13,7 +13,7 @@ class HelperTest extends TestCase
     public function testCanMakeNumericBytesHumanReadable(): void
     {
         $this->assertEquals('1 KB', Helper::readableBytes(1024));
-        $this->assertEquals('1000 B', Helper::readableBytes(1000));
+        $this->assertEquals('1000 bytes', Helper::readableBytes(1000));
         $this->assertEquals('9.31 GB', Helper::readableBytes(10000000000));
         $this->assertEquals('648.37 TB', Helper::readableBytes(712893712304234));
         $this->assertEquals('5.52 PB', Helper::readableBytes(6212893712323224));
