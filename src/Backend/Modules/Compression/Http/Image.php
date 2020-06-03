@@ -39,7 +39,7 @@ class Image
     {
         $resource = @fopen($fileName, 'wb');
         if (!$resource) {
-            throw new InvalidResourceException('Resource does not exists');
+            throw new InvalidResourceException("Resource $fileName does not exists or no permissions to the folder");
         }
 
         $this->getDataStream()->rewind();
