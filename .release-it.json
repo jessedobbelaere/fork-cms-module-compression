@@ -3,8 +3,7 @@
     "before:release": [
       "npx auto-changelog --commit-limit false --template https://raw.githubusercontent.com/release-it/release-it/master/templates/keepachangelog.hbs",
       "git add CHANGELOG.md"
-    ],
-    "before:git:release": "git push --delete origin ${version} && git tag --delete ${version}"
+    ]
   },
   "git": {
     "commitMessage": "🔖 Release ${version}",
